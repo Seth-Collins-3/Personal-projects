@@ -1,7 +1,6 @@
 import requests
 import json
 import time
-import custom_config
 import config
 
 information = config.information
