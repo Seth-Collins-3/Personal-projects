@@ -1,7 +1,7 @@
 import requests
 import json
-import xlrd
 import time
+import custom_config
 import config
 
 information = config.information
@@ -26,7 +26,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summoner_ID + "?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
 
     def get_mastery_points_by_char_ID(self, summoner_ID, champion_ID):
@@ -37,7 +36,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summoner_ID + "/by-champion/" + champion_ID + "?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
 
     def get_mastery_score(self, summoner_ID):
@@ -48,7 +46,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/champion-mastery/v4/scores/by-summoner/" + summoner_ID + "?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
 
     ### END CHAMPION-MASTERY-V4 ###
@@ -63,7 +60,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + summoner_ID + "?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
 
     ### END LEAGUE V4 ###
@@ -78,7 +74,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/match/v4/matches/" + str(match_ID) + "?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
 
     def get_match_history(self, account_ID):
@@ -89,7 +84,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/match/v4/matchlists/by-account/" + account_ID + "?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
 
     def get_match_timeline(self, match_ID):
@@ -100,7 +94,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/match/v4/timelines/by-match/" + match_ID + "?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
 
     def get_match_ID_by_tournament_code(self, tournament_code):
@@ -111,7 +104,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/match/v4/matches/by-tournament-code/" + tournament_code + "/ids?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
 
     def get_match_by_match_ID_and_tournament_code(self, match_ID, tournament_Code):
@@ -122,7 +114,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/match/v4/matches/" + match_ID + "/by-tournament-code/" + tournament_code + "?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
 
     ### END MATCH V4 ###
@@ -137,7 +128,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-account/" + account_ID + "?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
     
     def get_summoner_by_name(self, summoner_name):
@@ -148,7 +138,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summoner_name + "?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
 
     def get_summoner_by_summoner_ID(self, summoner_ID):
@@ -159,7 +148,6 @@ class RiotAPI:
         URL = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/" + summoner_ID + "?api_key=" + information["api key"]
         ret_data = requests.get(URL)
         ret_data = json.loads(ret_data.text)
-        time.sleep(0.1)
         return ret_data
 
     ### END SUMMONER V4 ###
@@ -168,11 +156,11 @@ class RiotAPI:
 
     ### CUSTOM GET FUNTIONS ###
 
-    def get_summoner_info(self, summoner_name):
-        info = session.get_summoner_by_name(summoner_name)
+    def get_summoner_info(self, account_id):
+        info = session.get_summoner_by_account_ID(account_id)
         print(json.dumps(info, indent=4))
         account_details = {
-            "name" : summoner_name,
+            "name" : info["name"],
             "account id" : info["accountId"],
             "summoner id" : info["id"],
             "summoner level" : info["summonerLevel"]
@@ -201,6 +189,8 @@ class RiotAPI:
         assists = 0
         games_played = 0
         wins = 0
+
+        #len(match_history["matches"])
         
         for i in range(0, len(match_history["matches"])):
             if(match_history["matches"][i]["queue"]!=840):
@@ -479,11 +469,11 @@ highest_kda = []
 highest_masteries = []
 highest_win_percent = []
 for j in range(0, len(information["summoners"])):
-    summoner_info.append(session.get_summoner_info(information["summoners"][j]))
-    ranked_data.append(session.player_ranked_details(summoner_info[j]["summoner id"], information["summoners"][j]))
-    highest_kda.append(session.kda_from_name(summoner_info[j]["account id"], information["summoners"][j]))
+    summoner_info.append(session.get_summoner_info(information["accountIds"][j]))
+    ranked_data.append(session.player_ranked_details(summoner_info[j]["summoner id"], summoner_info[j]["name"]))
+    highest_kda.append(session.kda_from_name(summoner_info[j]["account id"], summoner_info[j]["name"]))
     highest_win_percent = highest_kda
-    highest_masteries.append(session.highest_mastery_champ(summoner_info[j]["summoner id"], information["summoners"][j]))
+    highest_masteries.append(session.highest_mastery_champ(summoner_info[j]["summoner id"], summoner_info[j]["name"]))
 
 session.sort_mastery_score(highest_masteries)
 session.sort_kda(highest_kda)
